@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Простой тест QR-кода</title>
+</head>
+<body>
+    <h1>Тест QR-кода</h1>
+    <div id="qrcode"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        // Простой тест
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Страница загружена');
+            
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode не загружен');
+                document.getElementById('qrcode').innerHTML = 'Ошибка: QRCode не загружен';
+                return;
+            }
+            
+            console.log('QRCode загружен успешно');
+            
+            // Тестируем простой QR-код
+            QRCode.toCanvas(document.getElementById('qrcode'), 'TEST123', {
+                width: 200,
+                height: 200
+            }, function (error) {
+                if (error) {
+                    console.error('Ошибка:', error);
+                    document.getElementById('qrcode').innerHTML = 'Ошибка: ' + error.message;
+                } else {
+                    console.log('QR-код создан успешно');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

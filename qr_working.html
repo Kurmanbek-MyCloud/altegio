@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рабочий QR-код</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+        }
+        .qr-code-text {
+            color: #666;
+            font-size: 14px;
+        }
+        .test-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .qr-image {
+            width: 180px;
+            height: 180px;
+            border: 1px solid #ccc;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Рабочий QR-код</h1>
+        
+        <div class="test-info">
+            <h3>Тестовые данные:</h3>
+            <p><strong>QR-код:</strong> https://optimabank.kg/index.php?lang=ru#00020101021132650011QR.Optima.2010321310161091820936130183110717608581202121302123336003207b42c7763694d0eb6692b89602ba48f52049999530341754062000005907ZENTARA63041A6B</p>
+        </div>
+        
+        <div class="qr-code" id="qrCode">
+            <div id="qrCanvas">
+                <div class="qr-code-text">Генерируем QR-код...</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <p>QR-код для оплаты</p>
+        </div>
+    </div>
+    
+    <script>
+        // Простая реализация QR-кода через Google Charts API
+        function generateQRWithGoogle(text) {
+            const container = document.getElementById('qrCanvas');
+            container.innerHTML = '';
+            
+            // Создаем изображение QR-кода через Google Charts API
+            const img = document.createElement('img');
+            img.src = `https://chart.googleapis.com/chart?cht=qr&chs=180x180&chl=${encodeURIComponent(text)}`;
+            img.alt = 'QR-код для оплаты';
+            img.className = 'qr-image';
+            
+            img.onload = function() {
+                console.log('✅ QR-код загружен успешно');
+            };
+            
+            img.onerror = function() {
+                console.error('❌ Ошибка загрузки QR-кода');
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff0000;">Ошибка загрузки QR-кода</div>';
+            };
+            
+            container.appendChild(img);
+        }
+        
+        // Генерируем QR-код после загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM загружен, начинаем генерацию QR-кода...');
+            
+            const qrText = 'https://optimabank.kg/index.php?lang=ru#00020101021132650011QR.Optima.2010321310161091820936130183110717608581202121302123336003207b42c7763694d0eb6692b89602ba48f52049999530341754062000005907ZENTARA63041A6B';
+            console.log('Полученный qrCode:', qrText);
+            
+            if (qrText && qrText.trim() !== '') {
+                // Если qrText содержит URL от Optima API, извлекаем данные для QR-кода
+                let qrData = qrText;
+                
+                if (qrText.includes('optimabank.kg') && qrText.includes('#')) {
+                    // Извлекаем хеш из URL (данные для QR-кода)
+                    const hashIndex = qrText.indexOf('#');
+                    if (hashIndex !== -1) {
+                        qrData = qrText.substring(hashIndex + 1);
+                        console.log('Извлеченные данные для QR-кода:', qrData);
+                    }
+                } else if (qrText.includes('http')) {
+                    // Если это обычный URL, используем его как есть
+                    qrData = qrText;
+                }
+                
+                // Генерируем QR-код через Google Charts API
+                console.log('Генерируем QR-код из данных:', qrData);
+                generateQRWithGoogle(qrData);
+            } else {
+                console.log('qrCode пустой или не определен');
+                document.getElementById('qrCanvas').innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">QR-код не найден</div>';
+            }
+        });
+    </script>
+</body>
+</html>

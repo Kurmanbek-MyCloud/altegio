@@ -1,0 +1,222 @@
+# ОБРАЗЦЫ ЗАПРОСОВ К ALTEGIO API
+# Примеры как отправлять запросы для создания платежей
+
+## 1. НАСТРОЙКА POSTMAN
+
+### Основные настройки:
+- **Метод**: POST
+- **URL**: http://localhost:8000/api_endpoint.php
+- **Headers**:
+  ```
+  Content-Type: application/json
+  ```
+
+## 2. ПРЯМОЙ ЗАПРОС К ALTEGIO API
+
+### URL:
+```
+POST https://api.alteg.io/api/v1/finance_transactions/729142
+```
+
+### Заголовки:
+```
+Content-Type: application/json
+Accept: application/vnd.api.v2+json
+Authorization: Bearer gbkp3f4ynkd5jpejjsxp, User c1d3041f2185df70f5c341f0926adb44
+```
+
+### Тело запроса (JSON):
+```json
+{
+    "client_id": 123,
+    "amount": 1500,
+    "account_id": 2665932,
+    "expense_id": 1,
+    "date": "2024-01-15 14:30:00",
+    "comment": "Оплата за услуги"
+}
+```
+
+## 3. ЗАПРОСЫ ЧЕРЕЗ НАШ API (api_endpoint.php)
+
+### Минимальный запрос:
+```json
+{
+    "client_id": 123,
+    "amount": 1500
+}
+```
+
+### Полный запрос:
+```json
+{
+    "client_id": 123,
+    "amount": 2500,
+    "description": "Оплата за комплекс услуг",
+    "payment_method": "card",
+    "currency": "RUB",
+    "comment": "Стрижка + укладка",
+    "master_id": 456
+}
+```
+
+### Запрос для записи:
+```json
+{
+    "client_id": 789,
+    "amount": 3000,
+    "description": "Оплата за маникюр",
+    "payment_method": "cash",
+    "currency": "RUB",
+    "comment": "Запись на 15:00",
+    "master_id": 123
+}
+```
+
+## 4. ПАРАМЕТРЫ ЗАПРОСА
+
+### Обязательные параметры:
+- **client_id** (integer) - ID клиента в Altegio
+- **amount** (float) - сумма платежа (положительное число)
+
+### Опциональные параметры:
+- **description** (string) - описание платежа
+- **payment_method** (string) - метод оплаты: `cash`, `card`, `online`, `transfer`
+- **currency** (string) - валюта, по умолчанию `RUB`
+- **comment** (string) - комментарий к платежу
+- **master_id** (integer) - ID мастера
+
+## 5. ОТВЕТЫ API
+
+### Успешный ответ:
+```json
+{
+    "success": true,
+    "timestamp": "2024-01-15 14:30:00",
+    "data": {
+        "payment_id": "12345",
+        "amount": 1500,
+        "client_id": 123,
+        "status": "created",
+        "created_at": "2024-01-15 14:30:00",
+        "altegio_response": {
+            "id": 12345,
+            "client_id": 123,
+            "amount": 1500,
+            "status": "pending",
+            "date": "2024-01-15 14:30:00"
+        }
+    }
+}
+```
+
+### Ошибка валидации:
+```json
+{
+    "success": false,
+    "timestamp": "2024-01-15 14:30:00",
+    "data": null,
+    "error": "Missing required field: client_id"
+}
+```
+
+### Ошибка суммы:
+```json
+{
+    "success": false,
+    "timestamp": "2024-01-15 14:30:00",
+    "data": null,
+    "error": "Amount must be a positive number"
+}
+```
+
+### Ошибка Altegio API:
+```json
+{
+    "success": false,
+    "timestamp": "2024-01-15 14:30:00",
+    "data": null,
+    "error": "Failed to create payment in Altegio"
+}
+```
+
+## 6. КОДЫ ОТВЕТОВ HTTP
+
+- **200** - Успешное создание платежа
+- **400** - Ошибка валидации данных
+- **405** - Неверный метод запроса (только POST)
+- **500** - Внутренняя ошибка сервера
+
+## 7. ПРИМЕРЫ ИСПОЛЬЗОВАНИЯ
+
+### cURL запрос:
+```bash
+curl -X POST http://localhost:8000/api_endpoint.php \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": 123,
+    "amount": 1500,
+    "description": "Оплата за стрижку"
+  }'
+```
+
+### JavaScript fetch:
+```javascript
+fetch('http://localhost:8000/api_endpoint.php', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        client_id: 123,
+        amount: 1500,
+        description: 'Оплата за стрижку'
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+### PHP запрос:
+```php
+$data = [
+    'client_id' => 123,
+    'amount' => 1500,
+    'description' => 'Оплата за стрижку'
+];
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'http://localhost:8000/api_endpoint.php');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$result = json_decode($response, true);
+```
+
+## 8. ЛОГИРОВАНИЕ
+
+Все запросы логируются в файлы:
+- `api_endpoint.log` - логи нашего API
+- `payments_api.log` - логи запросов к Altegio
+- `payments.json` - информация о созданных платежах
+
+## 9. КОНФИГУРАЦИЯ
+
+Текущие настройки в config.php:
+- **user_token**: c1d3041f2185df70f5c341f0926adb44
+- **partner_token**: gbkp3f4ynkd5jpejjsxp
+- **company_id**: 729142
+- **account_id**: 2665932
+
+## 10. ТЕСТИРОВАНИЕ
+
+Для тестирования API:
+1. Запустите PHP сервер: `php -S localhost:8000`
+2. Отправьте POST запрос на `http://localhost:8000/api_endpoint.php`
+3. Проверьте логи в файлах для диагностики
+4. Убедитесь, что токены в config.php актуальны

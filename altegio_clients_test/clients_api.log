@@ -1,0 +1,304 @@
+[2025-08-05 09:43:45] === НАЧАЛО НОВОГО ТЕСТА ===
+[2025-08-05 09:43:45] Getting clients list with params: {
+    "page": 1,
+    "page_size": 25,
+    "order_by": "id",
+    "order_by_direction": "DESC",
+    "operation": "AND"
+}
+[2025-08-05 09:43:45] API Request: POST https://api.alteg.io/api/v1/company/729142/clients/search - HTTP 200
+[2025-08-05 09:43:45] API Success: {
+    "success": true,
+    "data": [
+        {
+            "id": 162746435
+        },
+        {
+            "id": 163635622
+        },
+        {
+            "id": 163635641
+        },
+        {
+            "id": 163955800
+        },
+        {
+            "id": 164000052
+        },
+        {
+            "id": 164118040
+        },
+        {
+            "id": 164118051
+        },
+        {
+            "id": 165106901
+        },
+        {
+            "id": 169861601
+        },
+        {
+            "id": 172280244
+        }
+    ],
+    "meta": {
+        "total_count": 10
+    }
+}
+[2025-08-05 09:43:45] Getting clients list with params: {
+    "page": 1,
+    "page_size": 10,
+    "order_by": "id",
+    "order_by_direction": "DESC",
+    "operation": "AND",
+    "fields": [
+        "id",
+        "name",
+        "phone",
+        "email"
+    ]
+}
+[2025-08-05 09:43:45] API Request: POST https://api.alteg.io/api/v1/company/729142/clients/search - HTTP 200
+[2025-08-05 09:43:45] API Success: {
+    "success": true,
+    "data": [
+        {
+            "id": 162746435,
+            "name": "Алтынай",
+            "phone": "+996858585858",
+            "email": ""
+        },
+        {
+            "id": 163635622,
+            "name": "Нурпери",
+            "phone": "+996555555555",
+            "email": ""
+        },
+        {
+            "id": 163635641,
+            "name": "Аман",
+            "phone": "+996566655555",
+            "email": ""
+        },
+        {
+            "id": 163955800,
+            "name": "hghghghghg",
+            "phone": "+996558855585",
+            "email": ""
+        },
+        {
+            "id": 164000052,
+            "name": "Игорь",
+            "phone": "+996755505504",
+            "email": ""
+        },
+        {
+            "id": 164118040,
+            "name": "Александр",
+            "phone": "+996550508505",
+            "email": ""
+        },
+        {
+            "id": 164118051,
+            "name": "Ьесь",
+            "phone": "+996551877851",
+            "email": ""
+        },
+        {
+            "id": 165106901,
+            "name": "Манас",
+            "phone": "+996558875588",
+            "email": ""
+        },
+        {
+            "id": 169861601,
+            "name": "Нурайым",
+            "phone": "+996223389755",
+            "email": ""
+        },
+        {
+            "id": 172280244,
+            "name": "test",
+            "phone": "+999000999",
+            "email": ""
+        }
+    ],
+    "meta": {
+        "total_count": 10
+    }
+}
+[2025-08-05 09:43:45] Getting clients list with params: {
+    "page": 1,
+    "page_size": 5,
+    "order_by": "last_visit_date",
+    "order_by_direction": "DESC",
+    "operation": "AND",
+    "fields": [
+        "id",
+        "name",
+        "phone",
+        "last_visit_date"
+    ]
+}
+[2025-08-05 09:43:57] API Request: POST https://api.alteg.io/api/v1/company/729142/clients/search - HTTP 200
+[2025-08-05 09:43:57] API Success: {
+    "success": true,
+    "data": [
+        {
+            "id": 169861601,
+            "name": "Нурайым",
+            "phone": "+996223389755",
+            "last_visit_date": "2025-05-02 12:15:00"
+        },
+        {
+            "id": 162746435,
+            "name": "Алтынай",
+            "phone": "+996858585858",
+            "last_visit_date": "2024-11-29 14:30:00"
+        },
+        {
+            "id": 163635622,
+            "name": "Нурпери",
+            "phone": "+996555555555",
+            "last_visit_date": "2024-11-27 14:30:00"
+        },
+        {
+            "id": 165106901,
+            "name": "Манас",
+            "phone": "+996558875588",
+            "last_visit_date": "2024-11-27 14:30:00"
+        },
+        {
+            "id": 163635641,
+            "name": "Аман",
+            "phone": "+996566655555",
+            "last_visit_date": "2024-11-25 14:30:00"
+        }
+    ],
+    "meta": {
+        "total_count": 10
+    }
+}
+[2025-08-05 09:43:57] Getting clients list with params: {
+    "page": 2,
+    "page_size": 10,
+    "order_by": "id",
+    "order_by_direction": "DESC",
+    "operation": "AND"
+}
+[2025-08-05 09:43:57] API Request: POST https://api.alteg.io/api/v1/company/729142/clients/search - HTTP 200
+[2025-08-05 09:43:57] API Success: {
+    "success": true,
+    "data": [],
+    "meta": {
+        "total_count": 10
+    }
+}
+[2025-08-05 09:43:57] Getting clients list with params: {
+    "page": 1,
+    "page_size": 5,
+    "order_by": "name",
+    "order_by_direction": "ASC",
+    "operation": "AND",
+    "fields": [
+        "id",
+        "name",
+        "phone"
+    ]
+}
+[2025-08-05 09:43:59] API Request: POST https://api.alteg.io/api/v1/company/729142/clients/search - HTTP 200
+[2025-08-05 09:43:59] API Success: {
+    "success": true,
+    "data": [
+        {
+            "id": 163955800,
+            "name": "hghghghghg",
+            "phone": "+996558855585"
+        },
+        {
+            "id": 172280244,
+            "name": "test",
+            "phone": "+999000999"
+        },
+        {
+            "id": 164118040,
+            "name": "Александр",
+            "phone": "+996550508505"
+        },
+        {
+            "id": 162746435,
+            "name": "Алтынай",
+            "phone": "+996858585858"
+        },
+        {
+            "id": 163635641,
+            "name": "Аман",
+            "phone": "+996566655555"
+        }
+    ],
+    "meta": {
+        "total_count": 10
+    }
+}
+[2025-08-05 09:43:59] Getting clients list with params: {
+    "page": 1,
+    "page_size": 200,
+    "order_by": "id",
+    "order_by_direction": "DESC",
+    "operation": "AND",
+    "fields": [
+        "id",
+        "name"
+    ]
+}
+[2025-08-05 09:44:16] API Request: POST https://api.alteg.io/api/v1/company/729142/clients/search - HTTP 200
+[2025-08-05 09:44:16] API Success: {
+    "success": true,
+    "data": [
+        {
+            "id": 162746435,
+            "name": "Алтынай"
+        },
+        {
+            "id": 163635622,
+            "name": "Нурпери"
+        },
+        {
+            "id": 163635641,
+            "name": "Аман"
+        },
+        {
+            "id": 163955800,
+            "name": "hghghghghg"
+        },
+        {
+            "id": 164000052,
+            "name": "Игорь"
+        },
+        {
+            "id": 164118040,
+            "name": "Александр"
+        },
+        {
+            "id": 164118051,
+            "name": "Ьесь"
+        },
+        {
+            "id": 165106901,
+            "name": "Манас"
+        },
+        {
+            "id": 169861601,
+            "name": "Нурайым"
+        },
+        {
+            "id": 172280244,
+            "name": "test"
+        }
+    ],
+    "meta": {
+        "total_count": 10
+    }
+}
+================================================================================
+

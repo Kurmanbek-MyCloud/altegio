@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест платежей Altegio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .webhook-url {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .payment-form {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .payment-form input, .payment-form select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .payment-form label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Тест платежей Altegio</h1>
+        
+        <div class="test-section">
+            <h3>📡 URL вебхука</h3>
+            <p>Используйте этот URL в настройках вашего приложения Altegio:</p>
+            <div class="webhook-url" id="webhookUrl">http://localhost:8000/main.php</div>
+            <button onclick="copyWebhookUrl()">📋 Скопировать URL</button>
+        </div>
+
+        <div class="test-section">
+            <h3>💳 Создание платежа</h3>
+            <p>Создайте тестовый платеж с произвольными данными:</p>
+            <div class="payment-form">
+                <label>Сумма:</label>
+                <input type="number" id="paymentAmount" value="1500" min="1" max="100000">
+                
+                <label>Валюта:</label>
+                <select id="paymentCurrency">
+                    <option value="RUB">RUB</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                
+                <label>Метод оплаты:</label>
+                <select id="paymentMethod">
+                    <option value="cash">Наличные</option>
+                    <option value="card">Банковская карта</option>
+                    <option value="online">Онлайн оплата</option>
+                    <option value="transfer">Банковский перевод</option>
+                </select>
+                
+                <label>Описание:</label>
+                <input type="text" id="paymentDescription" value="Оплата за услугу">
+            </div>
+            <button onclick="testTransactionCreated()">Создать транзакцию</button>
+            <div id="transactionCreatedResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Успешный платеж</h3>
+            <p>Имитирует успешное получение платежа</p>
+            <button onclick="testPaymentReceived()">Тестировать payment.received</button>
+            <div id="paymentReceivedResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>❌ Неудачный платеж</h3>
+            <p>Имитирует неудачную попытку платежа</p>
+            <button onclick="testPaymentFailed()">Тестировать payment.failed</button>
+            <div id="paymentFailedResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔄 Обновление транзакции</h3>
+            <p>Имитирует обновление статуса транзакции</p>
+            <button onclick="testTransactionUpdated()">Тестировать transaction.updated</button>
+            <div id="transactionUpdatedResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>❌ Отмена транзакции</h3>
+            <p>Имитирует отмену транзакции</p>
+            <button onclick="testTransactionCancelled()">Тестировать transaction.cancelled</button>
+            <div id="transactionCancelledResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Завершение визита</h3>
+            <p>Имитирует завершение визита с автоматическим созданием платежа</p>
+            <button onclick="testVisitCompleted()">Тестировать visit.completed</button>
+            <div id="visitCompletedResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Проверка логов</h3>
+            <p>Проверяет файлы логов платежей</p>
+            <button onclick="checkLogs()">Проверить логи</button>
+            <button onclick="checkNotifications()">Проверить уведомления</button>
+            <div id="logsResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Функция для копирования URL вебхука
+        function copyWebhookUrl() {
+            const url = document.getElementById('webhookUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL скопирован в буфер обмена!');
+            });
+        }
+
+        // Функция для отправки тестового вебхука
+        async function sendWebhook(eventType, data) {
+            try {
+                const response = await fetch('/main.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        event_type: eventType,
+                        data: data
+                    })
+                });
+
+                const result = await response.text();
+                return {
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    status: 'error',
+                    data: error.message
+                };
+            }
+        }
+
+        // Тест создания транзакции
+        async function testTransactionCreated() {
+            const resultDiv = document.getElementById('transactionCreatedResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Отправка запроса...';
+
+            const amount = document.getElementById('paymentAmount').value;
+            const currency = document.getElementById('paymentCurrency').value;
+            const method = document.getElementById('paymentMethod').value;
+            const description = document.getElementById('paymentDescription').value;
+
+            const testData = {
+                id: Math.floor(Math.random() * 10000) + 1000,
+                client_id: Math.floor(Math.random() * 1000) + 100,
+                amount: parseFloat(amount),
+                currency: currency,
+                payment_method: method,
+                description: description,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            };
+
+            const result = await sendWebhook('transaction.created', testData);
+            
+            resultDiv.className = result.status === 200 ? 'result success' : 'result error';
+            resultDiv.textContent = `Статус: ${result.status}\n\nДанные транзакции:\n${JSON.stringify(testData, null, 2)}\n\nОтвет:\n${result.data}`;
+        }
+
+        // Тест успешного платежа
+        async function testPaymentReceived() {
+            const resultDiv = document.getElementById('paymentReceivedResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Отправка запроса...';
+
+            const testData = {
+                transaction_id: Math.floor(Math.random() * 10000) + 1000,
+                client_id: Math.floor(Math.random() * 1000) + 100,
+                amount: 1500,
+                currency: 'RUB',
+                payment_method: 'card',
+                payment_date: new Date().toISOString(),
+                receipt_url: 'https://example.com/receipt/123'
+            };
+
+            const result = await sendWebhook('payment.received', testData);
+            
+            resultDiv.className = result.status === 200 ? 'result success' : 'result error';
+            resultDiv.textContent = `Статус: ${result.status}\n\nОтвет:\n${result.data}`;
+        }
+
+        // Тест неудачного платежа
+        async function testPaymentFailed() {
+            const resultDiv = document.getElementById('paymentFailedResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Отправка запроса...';
+
+            const testData = {
+                transaction_id: Math.floor(Math.random() * 10000) + 1000,
+                client_id: Math.floor(Math.random() * 1000) + 100,
+                amount: 1500,
+                currency: 'RUB',
+                payment_method: 'card',
+                error_message: 'Недостаточно средств на карте',
+                error_code: 'INSUFFICIENT_FUNDS',
+                failed_at: new Date().toISOString()
+            };
+
+            const result = await sendWebhook('payment.failed', testData);
+            
+            resultDiv.className = result.status === 200 ? 'result success' : 'result error';
+            resultDiv.textContent = `Статус: ${result.status}\n\nОтвет:\n${result.data}`;
+        }
+
+        // Тест обновления транзакции
+        async function testTransactionUpdated() {
+            const resultDiv = document.getElementById('transactionUpdatedResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Отправка запроса...';
+
+            const testData = {
+                id: Math.floor(Math.random() * 10000) + 1000,
+                client_id: Math.floor(Math.random() * 1000) + 100,
+                amount: 2000,
+                currency: 'RUB',
+                payment_method: 'card',
+                status: 'completed',
+                updated_at: new Date().toISOString(),
+                completed_at: new Date().toISOString()
+            };
+
+            const result = await sendWebhook('transaction.updated', testData);
+            
+            resultDiv.className = result.status === 200 ? 'result success' : 'result error';
+            resultDiv.textContent = `Статус: ${result.status}\n\nОтвет:\n${result.data}`;
+        }
+
+        // Тест отмены транзакции
+        async function testTransactionCancelled() {
+            const resultDiv = document.getElementById('transactionCancelledResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Отправка запроса...';
+
+            const testData = {
+                id: Math.floor(Math.random() * 10000) + 1000,
+                client_id: Math.floor(Math.random() * 1000) + 100,
+                amount: 1500,
+                currency: 'RUB',
+                payment_method: 'card',
+                status: 'cancelled',
+                cancellation_reason: 'Клиент отменил заказ',
+                cancelled_at: new Date().toISOString()
+            };
+
+            const result = await sendWebhook('transaction.cancelled', testData);
+            
+            resultDiv.className = result.status === 200 ? 'result success' : 'result error';
+            resultDiv.textContent = `Статус: ${result.status}\n\nОтвет:\n${result.data}`;
+        }
+
+        // Тест завершения визита
+        async function testVisitCompleted() {
+            const resultDiv = document.getElementById('visitCompletedResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Отправка запроса...';
+
+            const testData = {
+                id: Math.floor(Math.random() * 10000) + 1000,
+                appointment_id: Math.floor(Math.random() * 10000) + 1000,
+                client_id: Math.floor(Math.random() * 1000) + 100,
+                client_name: 'Иван Иванов',
+                service_id: 1,
+                service_name: 'Стрижка',
+                staff_id: 1,
+                staff_name: 'Мастер Анна',
+                datetime: new Date().toISOString(),
+                duration: 60,
+                status: 'completed',
+                price: 1500,
+                payment_method: 'card',
+                payment_status: 'paid'
+            };
+
+            const result = await sendWebhook('visit.completed', testData);
+            
+            resultDiv.className = result.status === 200 ? 'result success' : 'result error';
+            resultDiv.textContent = `Статус: ${result.status}\n\nОтвет:\n${result.data}`;
+        }
+
+        // Проверка логов
+        async function checkLogs() {
+            const resultDiv = document.getElementById('logsResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Загрузка логов...';
+
+            try {
+                const response = await fetch('/webhook_log.txt');
+                if (response.ok) {
+                    const logs = await response.text();
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = logs || 'Логи пусты';
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = 'Файл логов не найден';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Ошибка при загрузке логов: ' + error.message;
+            }
+        }
+
+        // Проверка уведомлений
+        async function checkNotifications() {
+            const resultDiv = document.getElementById('logsResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Загрузка уведомлений...';
+
+            try {
+                const response = await fetch('/notifications.txt');
+                if (response.ok) {
+                    const notifications = await response.text();
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = notifications || 'Уведомления отсутствуют';
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = 'Файл уведомлений не найден';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Ошибка при загрузке уведомлений: ' + error.message;
+            }
+        }
+
+        // Автоматическое обновление URL при загрузке страницы
+        window.onload = function() {
+            const currentUrl = window.location.origin + '/main.php';
+            document.getElementById('webhookUrl').textContent = currentUrl;
+        };
+    </script>
+</body>
+</html> 

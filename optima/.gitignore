@@ -1,0 +1,29 @@
+# Конфигурационные файлы с чувствительными данными
+config.php
+config.local.php
+
+# Логи
+*.log
+webhook.log
+createpayment.log
+
+# Временные файлы
+temp_*.json
+*.tmp
+
+# Кэш
+cache/
+*.cache
+
+# Временные данные
+temp_webhook_data.json
+
+# IDE файлы
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Системные файлы
+.DS_Store
+Thumbs.db 

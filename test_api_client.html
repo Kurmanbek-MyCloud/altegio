@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест API для создания платежей в Altegio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .flow-diagram {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-step {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+        .arrow {
+            font-size: 20px;
+            color: #007bff;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Тест API для создания платежей в Altegio</h1>
+        
+        <div class="flow-diagram">
+            <div class="flow-step">Клиент</div>
+            <span class="arrow">→</span>
+            <div class="flow-step">Наш API</div>
+            <span class="arrow">→</span>
+            <div class="flow-step">Altegio</div>
+        </div>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="client_id">ID клиента *:</label>
+                <input type="number" id="client_id" name="client_id" value="172280244" required>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Сумма платежа (RUB) *:</label>
+                <input type="number" id="amount" name="amount" value="1500" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание платежа:</label>
+                <input type="text" id="description" name="description" value="Тестовый платеж через API">
+            </div>
+
+            <div class="form-group">
+                <label for="payment_method">Способ оплаты:</label>
+                <select id="payment_method" name="payment_method">
+                    <option value="cash">Наличные</option>
+                    <option value="card">Карта</option>
+                    <option value="online">Онлайн</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="currency">Валюта:</label>
+                <select id="currency" name="currency">
+                    <option value="RUB">RUB</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="master_id">ID мастера (опционально):</label>
+                <input type="number" id="master_id" name="master_id" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Комментарий (опционально):</label>
+                <textarea id="comment" name="comment" placeholder="Дополнительная информация о платеже"></textarea>
+            </div>
+
+            <div style="text-align: center;">
+                <button type="submit">💳 Создать платеж в Altegio</button>
+                <button type="button" onclick="clearForm()">🗑️ Очистить</button>
+            </div>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const requestData = {};
+            
+            // Собираем данные формы
+            for (let [key, value] of formData.entries()) {
+                if (value !== '') {
+                    requestData[key] = value;
+                }
+            }
+            
+            // Убираем пустые поля
+            if (requestData.master_id === '') delete requestData.master_id;
+            if (requestData.comment === '') delete requestData.comment;
+            
+            // Конвертируем числовые поля
+            requestData.client_id = parseInt(requestData.client_id);
+            requestData.amount = parseFloat(requestData.amount);
+            if (requestData.master_id) {
+                requestData.master_id = parseInt(requestData.master_id);
+            }
+            
+            console.log('Отправляем данные:', requestData);
+            
+            try {
+                const response = await fetch('api_endpoint.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('result');
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Платеж успешно создан в Altegio!</h3>
+                            <p><strong>ID платежа:</strong> ${result.data.payment_id}</p>
+                            <p><strong>Сумма:</strong> ${result.data.amount} RUB</p>
+                            <p><strong>Клиент ID:</strong> ${result.data.client_id}</p>
+                            <p><strong>Статус:</strong> ${result.data.status}</p>
+                            <p><strong>Создан:</strong> ${result.data.created_at}</p>
+                        </div>
+                        <div class="response">
+                            <strong>Полный ответ от Altegio:</strong>
+                            ${JSON.stringify(result.data.altegio_response, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Ошибка создания платежа</h3>
+                            <p><strong>Ошибка:</strong> ${result.error}</p>
+                            <p><strong>HTTP код:</strong> ${response.status}</p>
+                        </div>
+                        <div class="response">
+                            <strong>Полный ответ:</strong>
+                            ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Ошибка сети</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+        
+        function clearForm() {
+            document.getElementById('paymentForm').reset();
+            document.getElementById('result').innerHTML = '';
+        }
+        
+        // Показываем информацию о том, как работает система
+        console.log(`
+🎯 Как работает система:
+1. Клиент отправляет POST запрос на api_endpoint.php
+2. Наш код валидирует данные
+3. Отправляется API запрос в Altegio
+4. Altegio создает платеж в своей системе
+5. Возвращается ответ с ID платежа
+
+📡 API Endpoint: POST /api_endpoint.php
+📊 Логи: api_endpoint.log
+        `);
+    </script>
+</body>
+</html> 
