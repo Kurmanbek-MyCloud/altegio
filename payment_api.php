@@ -226,7 +226,7 @@ function handleCustomPaymentRequest($data) {
  * Создание URL страницы оплаты
  */
 function createPaymentPageUrl($params) {
-    $baseUrl = 'https://your-domain.com/payment_page.php';
+    $baseUrl = 'https://nbfit.mycloud.kg/payment_page.php';
     
     // Фильтруем пустые параметры и правильно кодируем
     $cleanParams = [];
