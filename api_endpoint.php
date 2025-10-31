@@ -46,9 +46,12 @@ function sendResponse($success, $data = null, $error = null, $httpCode = 200) {
 }
 
 // Проверяем метод запроса
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    logApiRequest("Invalid method: " . $_SERVER['REQUEST_METHOD']);
-    sendResponse(false, null, 'Only POST method is allowed', 405);
+$requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN';
+logApiRequest("Request method: " . $requestMethod);
+
+if ($requestMethod !== 'POST') {
+    logApiRequest("Invalid method: " . $requestMethod . " (expected POST)");
+    sendResponse(false, null, 'Only POST method is allowed. Current method: ' . $requestMethod, 405);
 }
 
 // Получаем данные запроса
