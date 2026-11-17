@@ -1,0 +1,8 @@
+# Служебные файлы не отдаются через веб (Apache 2.4)
+<FilesMatch "^(config.*\.php|schema.*\.sql|\..+|composer\.(json|lock|phar)|.*\.log|.*\.md|webhook_log\.txt|notifications\.txt|payments\.json|records\.json|transactions\.json)$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 /(lib|logs|data|tests|vendor|\.git)(/|$)
+
+# Basic Auth от Optima до PHP (для PHP-FPM/CGI)
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1

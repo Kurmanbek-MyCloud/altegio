@@ -1,0 +1,18 @@
+# Секреты
+config.local.php
+optima/config.php
+
+# Логи и данные
+*.log
+webhook_log.txt
+notifications.txt
+payments.json
+records.json
+transactions.json
+logs/
+
+# Системное
+.DS_Store
+.idea/
+.vscode/
+data/
